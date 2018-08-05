@@ -19,7 +19,7 @@ public class SpeechDataObject {
 
     @Override
     public String toString() {
-        String readableString = String.format("action: %s, location: %s", action, location);
-        return readableString;
+        String str = String.format("action: %s, location: %s", action, location);
+        return str;
     }
 }
