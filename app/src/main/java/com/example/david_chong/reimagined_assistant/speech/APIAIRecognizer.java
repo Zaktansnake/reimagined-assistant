@@ -19,7 +19,7 @@ public class APIAIRecognizer implements SpeechInterpretor {
 
     private Context context;
     private ExecutorService executorService;
-    private AIDataService dataService;
+    private AIDataService aiDataService;
 
     public APIAIRecognizer(ExecutorService executorService, Context context){
         this.context = context;
@@ -27,11 +27,11 @@ public class APIAIRecognizer implements SpeechInterpretor {
 
         String accessToken = context.getString(R.string.api_ai_key);
 
-        AIConfiguration configuration = new AIConfiguration(accessToken,
+        AIConfiguration aiConfiguration = new AIConfiguration(accessToken,
                 AIConfiguration.SupportedLanguages.English,
                 AIConfiguration.RecognitionEngine.System);
 
-        this.dataService = new AIDataService(context, configuration);
+        this.aiDataService = new AIDataService(context, aiConfiguration);
     }
 
     @Override
@@ -40,19 +40,17 @@ public class APIAIRecognizer implements SpeechInterpretor {
         AIRequest aiRequest = new AIRequest(text);
         AIResponse aiResponse = null;
         try {
-            aiResponse = dataService.request(aiRequest);
+            aiResponse = aiDataService.request(aiRequest);
         } catch (AIServiceException e) {
-            Log.e(TAG, "AIServiceException when interpreting", e);
+            Log.e(TAG, "AIServiceException Caught: ", e);
             return null;
         }
 
-        // Null Check
         if(aiResponse == null){
             Log.e(TAG, "Null AI Response");
             throw new NullPointerException("Null AI Response");
         }
 
-        // Parse
         Result result = aiResponse.getResult();
         String action = result.getAction();
         String location = result.getStringParameter("location", "");
@@ -75,7 +73,6 @@ public class APIAIRecognizer implements SpeechInterpretor {
             }
         };
 
-        // Submit to background
         this.executorService.submit(runnable);
     }
 }
